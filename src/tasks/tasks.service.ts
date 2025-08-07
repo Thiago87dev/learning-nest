@@ -12,7 +12,7 @@ export class TasksService {
     const {
       limit = 10,
       offset = 0,
-      orderBy = 'createdAt',
+      orderBy = 'name',
       order = 'asc',
     } = params ?? {};
 
@@ -41,21 +41,38 @@ export class TasksService {
   }
 
   async create(body: CreateTaskDto) {
-    const newTask = await this.prisma.task.create({
-      data: {
-        name: body.name,
-        description: body.description,
-        completed: false,
-      },
-    });
+    const newTask = await this.prisma.task
+      .create({
+        data: {
+          name: body.name,
+          description: body.description,
+          completed: false,
+          userId: body.userId,
+        },
+      })
+      .catch(() => {
+        throw new HttpException('Erro ao criar tarefa', HttpStatus.BAD_REQUEST);
+      });
     return newTask;
   }
 
   async update(id: number, body: UpdateTaskDto) {
+    const allowedFields: (keyof UpdateTaskDto)[] = [
+      'name',
+      'description',
+      'completed',
+    ];
+    const data: Record<string, any> = {};
+
+    for (const key of allowedFields) {
+      if (body[key] !== undefined) {
+        data[key] = body[key];
+      }
+    }
     const updatedTask = await this.prisma.task
       .update({
         where: { id },
-        data: body,
+        data,
       })
       .catch(() => {
         throw new HttpException('Essa tarefa não existe', HttpStatus.NOT_FOUND);
@@ -71,6 +88,6 @@ export class TasksService {
       .catch(() => {
         throw new HttpException('Essa tarefa não existe', HttpStatus.NOT_FOUND);
       });
-    return deletedTask;
+    return `tarefa ${deletedTask.name} apagada com sucesso`;
   }
 }

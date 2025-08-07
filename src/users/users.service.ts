@@ -23,6 +23,7 @@ export class UsersService {
         name: true,
         email: true,
         createdAt: true,
+        Task: true,
       },
     });
     if (!user) {
