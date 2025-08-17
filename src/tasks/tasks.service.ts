@@ -3,12 +3,17 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { TaskUtils } from './tasks.utils';
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private taskUtil: TaskUtils
+  ) {}
 
   async findAll(params?: PaginationDto) {
+    console.log(this.taskUtil.splitString("Thiago Alves"));
     const {
       limit = 10,
       offset = 0,
@@ -26,6 +31,7 @@ export class TasksService {
       }),
       this.prisma.task.count(),
     ]);
+    
     return { findAllTasks, count };
   }
 

@@ -7,12 +7,13 @@ export class LoggerMiddleware implements NestMiddleware{
 
     const authorization = req.headers.authorization
 
-    console.log('[MIDDLEWARE]: Criando user no requisição.');
-
+    
     if (authorization){
+      console.log('[MIDDLEWARE]: Criando user na requisição.');
       req['user'] = {
         token:authorization,
-        name: 'FULANO TESTE'
+        name: 'FULANO TESTE',
+        role: 'admin'
       }
     }
 
